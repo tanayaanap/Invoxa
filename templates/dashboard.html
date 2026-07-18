@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard | Invoxa{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Welcome -->
+
+    <div class="mb-4">
+
+        <h2 class="fw-bold">
+            Welcome Back 👋
+        </h2>
+
+        <p class="text-muted">
+            Here's a quick overview of your business.
+        </p>
+
+    </div>
+
+    <!-- Statistics Cards -->
+
+    <div class="row g-4">
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="dashboard-card">
+
+                <div>
+
+                    <h6>Total Customers</h6>
+
+                    <h2>125</h2>
+
+                </div>
+
+                <i class="bi bi-people-fill card-icon"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="dashboard-card">
+
+                <div>
+
+                    <h6>Total Products</h6>
+
+                    <h2>86</h2>
+
+                </div>
+
+                <i class="bi bi-box-seam card-icon"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="dashboard-card">
+
+                <div>
+
+                    <h6>Invoices</h6>
+
+                    <h2>342</h2>
+
+                </div>
+
+                <i class="bi bi-file-earmark-text card-icon"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+
+            <div class="dashboard-card">
+
+                <div>
+
+                    <h6>Revenue</h6>
+
+                    <h2>₹1,28,000</h2>
+
+                </div>
+
+                <i class="bi bi-currency-rupee card-icon"></i>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+
+    <div class="row mt-4">
+
+        <div class="col-lg-12">
+
+            <div class="action-card">
+
+                <h5 class="mb-3">
+
+                    Quick Actions
+
+                </h5>
+
+                <a href="#" class="btn btn-primary me-2">
+                    Add Customer
+                </a>
+
+                <a href="#" class="btn btn-success me-2">
+                    Add Product
+                </a>
+
+                <a href="#" class="btn btn-warning me-2 text-white">
+                    Create Invoice
+                </a>
+
+                <a href="#" class="btn btn-info text-white">
+                    View Reports
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Recent Invoices -->
+
+    <div class="row mt-4">
+
+        <div class="col-lg-8">
+
+            <div class="table-card">
+
+                <h5 class="mb-3">
+
+                    Recent Invoices
+
+                </h5>
+
+                <table class="table table-hover">
+
+                    <thead>
+
+                    <tr>
+
+                        <th>Invoice</th>
+
+                        <th>Customer</th>
+
+                        <th>Amount</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    <tr>
+
+                        <td>#INV001</td>
+
+                        <td>ABC Pvt Ltd</td>
+
+                        <td>₹12,000</td>
+
+                        <td>
+
+                            <span class="badge bg-success">
+
+                                Paid
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>#INV002</td>
+
+                        <td>XYZ Solutions</td>
+
+                        <td>₹8,450</td>
+
+                        <td>
+
+                            <span class="badge bg-warning text-dark">
+
+                                Pending
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <td>#INV003</td>
+
+                        <td>TechNova</td>
+
+                        <td>₹21,300</td>
+
+                        <td>
+
+                            <span class="badge bg-danger">
+
+                                Overdue
+
+                            </span>
+
+                        </td>
+
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        <!-- Payment Summary -->
+
+        <div class="col-lg-4">
+
+            <div class="table-card">
+
+                <h5 class="mb-3">
+
+                    Payment Summary
+
+                </h5>
+
+                <ul class="list-group">
+
+                    <li class="list-group-item d-flex justify-content-between">
+
+                        Paid
+
+                        <strong class="text-success">
+                            ₹80,000
+                        </strong>
+
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+
+                        Pending
+
+                        <strong class="text-warning">
+                            ₹35,000
+                        </strong>
+
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+
+                        Overdue
+
+                        <strong class="text-danger">
+                            ₹13,000
+                        </strong>
+
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
