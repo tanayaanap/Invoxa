@@ -164,6 +164,4 @@ python manage.py collectstatic
 ---
 
 
-## 📄 License
 
-This project is developed for educational and internship purposes.
