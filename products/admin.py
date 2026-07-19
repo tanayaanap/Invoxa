@@ -20,6 +20,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     list_filter = (
         "gst",
+        "created_at",
     )
 
     ordering = (
