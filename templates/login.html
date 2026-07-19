@@ -1,15 +1,13 @@
 {% load static %}
 
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Login | Invoxa</title>
 
@@ -42,7 +40,18 @@
 
         </p>
 
-        <form>
+        <!-- Display Login Error Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+
+            {% csrf_token %}
 
             <div class="mb-3">
 
@@ -53,8 +62,10 @@
                 </label>
 
                 <input type="text"
+                       name="username"
                        class="form-control"
-                       placeholder="Enter username">
+                       placeholder="Enter username"
+                       required>
 
             </div>
 
@@ -67,12 +78,15 @@
                 </label>
 
                 <input type="password"
+                       name="password"
                        class="form-control"
-                       placeholder="Enter password">
+                       placeholder="Enter password"
+                       required>
 
             </div>
 
-            <button class="btn btn-primary w-100">
+            <button type="submit"
+                    class="btn btn-primary w-100">
 
                 Login
 
