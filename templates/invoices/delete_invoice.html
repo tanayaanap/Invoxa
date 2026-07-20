@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-danger text-white">
+
+            <h3>Delete Invoice</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <h5>
+
+                Are you sure you want to delete
+
+                <strong>{{ invoice.invoice_number }}</strong>?
+
+            </h5>
+
+            <p>
+
+                Customer :
+
+                <strong>{{ invoice.customer.name }}</strong>
+
+            </p>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <button
+                    type="submit"
+                    class="btn btn-danger">
+
+                    Delete
+
+                </button>
+
+                <a
+                    href="{% url 'invoice_list' %}"
+                    class="btn btn-secondary">
+
+                    Cancel
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

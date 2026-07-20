@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+
+    <div class="card shadow">
+
+        <div class="card-header">
+
+            <h3>Invoice Details</h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row mb-4">
+
+                <div class="col-md-6">
+
+                    <h5>Invoice Number</h5>
+
+                    <p>{{ invoice.invoice_number }}</p>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <h5>Date</h5>
+
+                    <p>{{ invoice.invoice_date }}</p>
+
+                </div>
+
+            </div>
+
+            <div class="row mb-4">
+
+                <div class="col-md-6">
+
+                    <h5>Customer</h5>
+
+                    <p>{{ invoice.customer.name }}</p>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <h5>Status</h5>
+
+                    <span class="badge bg-success">
+
+                        {{ invoice.status }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Product</th>
+
+                        <th>Quantity</th>
+
+                        <th>Price</th>
+
+                        <th>GST</th>
+
+                        <th>Total</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for item in invoice.items.all %}
+
+                    <tr>
+
+                        <td>{{ item.product.name }}</td>
+
+                        <td>{{ item.quantity }}</td>
+
+                        <td>₹{{ item.price }}</td>
+
+                        <td>{{ item.gst }}%</td>
+
+                        <td>₹{{ item.total }}</td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            <div class="text-end">
+
+                <h5>
+
+                    Subtotal :
+                    ₹{{ invoice.subtotal }}
+
+                </h5>
+
+                <h5>
+
+                    GST :
+                    ₹{{ invoice.gst_amount }}
+
+                </h5>
+
+                <h4>
+
+                    Grand Total :
+                    ₹{{ invoice.total_amount }}
+
+                </h4>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

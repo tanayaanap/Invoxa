@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid p-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Invoices</h2>
+
+        <a href="{% url 'add_invoice' %}" class="btn btn-primary">
+            + Create Invoice
+        </a>
+
+    </div>
+
+    <table class="table table-hover shadow-sm">
+
+        <thead>
+
+            <tr>
+
+                <th>Invoice No.</th>
+
+                <th>Customer</th>
+
+                <th>Date</th>
+
+                <th>Status</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% for invoice in invoices %}
+
+            <tr>
+
+                <td>{{ invoice.invoice_number }}</td>
+
+                <td>{{ invoice.customer.name }}</td>
+
+                <td>{{ invoice.invoice_date }}</td>
+
+                <td>
+
+                    {% if invoice.status == "Paid" %}
+
+                        <span class="badge bg-success">
+                            Paid
+                        </span>
+
+                    {% else %}
+
+                        <span class="badge bg-warning text-dark">
+                            Pending
+                        </span>
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    <a href="{% url 'view_invoice' invoice.id %}"
+                       class="btn btn-info btn-sm">
+
+                        View
+
+                    </a>
+
+                    <a href="{% url 'edit_invoice' invoice.id %}"
+                       class="btn btn-warning btn-sm">
+
+                        Edit
+
+                    </a>
+
+                    <a href="{% url 'delete_invoice' invoice.id %}"
+                       class="btn btn-danger btn-sm">
+
+                        Delete
+
+                    </a>
+
+                    <a href="{% url 'generate_invoice_pdf' invoice.id %}"
+                        class="btn btn-secondary btn-sm">
+
+                        PDF
+
+                </a>
+
+                </td>
+
+            </tr>
+
+        {% empty %}
+
+            <tr>
+
+                <td colspan="5" class="text-center">
+
+                    No invoices found.
+
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
