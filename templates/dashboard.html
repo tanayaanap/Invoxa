@@ -7,12 +7,12 @@
 
 <div class="container-fluid">
 
-    <!-- Welcome -->
+    <!-- ================= Welcome ================= -->
 
     <div class="mb-4">
 
         <h2 class="fw-bold">
-            Welcome Back 👋
+            Welcome Back, {{ request.user.first_name|default:request.user.username }} 👋
         </h2>
 
         <p class="text-muted">
@@ -21,7 +21,7 @@
 
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- ================= Statistics Cards ================= -->
 
     <div class="row g-4">
 
@@ -67,7 +67,7 @@
 
                 <div>
 
-                    <h6>Invoices</h6>
+                    <h6>Total Invoices</h6>
 
                     <h2>{{ total_invoices }}</h2>
 
@@ -85,9 +85,9 @@
 
                 <div>
 
-                    <h6>Revenue</h6>
+                    <h6>Total Revenue</h6>
 
-                    <h2>₹{{ total_revenue }}</h2>
+                    <h2>₹{{ total_revenue|floatformat:2 }}</h2>
 
                 </div>
 
@@ -99,135 +99,119 @@
 
     </div>
 
-    <!-- Quick Actions -->
+    <!-- ================= Dashboard Content ================= -->
 
     <div class="row mt-4">
 
-        <div class="col-lg-12">
-
-            <div class="action-card">
-
-                <h5 class="mb-3">
-
-                    Quick Actions
-
-                </h5>
-
-                <a href="#" class="btn btn-primary me-2">
-                    Add Customer
-                </a>
-
-                <a href="#" class="btn btn-success me-2">
-                    Add Product
-                </a>
-
-                <a href="#" class="btn btn-warning me-2 text-white">
-                    Create Invoice
-                </a>
-
-                <a href="#" class="btn btn-info text-white">
-                    View Reports
-                </a>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- Recent Invoices -->
-
-    <div class="row mt-4">
+        <!-- Recent Invoices -->
 
         <div class="col-lg-8">
 
             <div class="table-card">
 
-                <h5 class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
 
-                    Recent Invoices
+                    <h5 class="mb-0">
 
-                </h5>
+                        Recent Invoices
 
-                <table class="table table-hover">
+                    </h5>
+
+                    <a href="{% url 'invoice_list' %}" class="btn btn-outline-primary btn-sm">
+
+                        View All
+
+                    </a>
+
+                </div>
+
+                <table class="table table-hover align-middle">
 
                     <thead>
 
-                    <tr>
+                        <tr>
 
-                        <th>Invoice</th>
+                            <th>Invoice</th>
 
-                        <th>Customer</th>
+                            <th>Customer</th>
 
-                        <th>Amount</th>
+                            <th>Date</th>
 
-                        <th>Status</th>
+                            <th>Amount</th>
 
-                    </tr>
+                            <th>Status</th>
+
+                        </tr>
 
                     </thead>
 
                     <tbody>
 
-                    <tr>
+                    {% for invoice in recent_invoices %}
 
-                        <td>#INV001</td>
+                        <tr>
 
-                        <td>ABC Pvt Ltd</td>
+                            <td>
 
-                        <td>₹12,000</td>
+                                {{ invoice.invoice_number }}
 
-                        <td>
+                            </td>
 
-                            <span class="badge bg-success">
+                            <td>
 
-                                Paid
+                                {{ invoice.customer.name }}
 
-                            </span>
+                            </td>
 
-                        </td>
+                            <td>
 
-                    </tr>
+                                {{ invoice.invoice_date }}
 
-                    <tr>
+                            </td>
 
-                        <td>#INV002</td>
+                            <td>
 
-                        <td>XYZ Solutions</td>
+                                ₹{{ invoice.total_amount }}
 
-                        <td>₹8,450</td>
+                            </td>
 
-                        <td>
+                            <td>
 
-                            <span class="badge bg-warning text-dark">
+                                {% if invoice.status == "Paid" %}
 
-                                Pending
+                                    <span class="badge bg-success">
 
-                            </span>
+                                        Paid
 
-                        </td>
+                                    </span>
 
-                    </tr>
+                                {% else %}
 
-                    <tr>
+                                    <span class="badge bg-warning text-dark">
 
-                        <td>#INV003</td>
+                                        Pending
 
-                        <td>TechNova</td>
+                                    </span>
 
-                        <td>₹21,300</td>
+                                {% endif %}
 
-                        <td>
+                            </td>
 
-                            <span class="badge bg-danger">
+                        </tr>
 
-                                Overdue
+                    {% empty %}
 
-                            </span>
+                        <tr>
 
-                        </td>
+                            <td colspan="5" class="text-center text-muted py-4">
 
-                    </tr>
+                                No invoices available.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
 
                     </tbody>
 
@@ -253,31 +237,61 @@
 
                     <li class="list-group-item d-flex justify-content-between">
 
-                        Paid
+                        Payments Received
 
                         <strong class="text-success">
-                            ₹80,000
+
+                            ₹{{ paid_amount|floatformat:2 }}
+
                         </strong>
 
                     </li>
 
                     <li class="list-group-item d-flex justify-content-between">
 
-                        Pending
+                        Pending Amount
 
                         <strong class="text-warning">
-                            ₹35,000
+
+                            ₹{{ pending_amount|floatformat:2 }}
+
                         </strong>
 
                     </li>
 
                     <li class="list-group-item d-flex justify-content-between">
 
-                        Overdue
+                        Total Revenue
 
-                        <strong class="text-danger">
-                            ₹13,000
+                        <strong class="text-primary">
+
+                            ₹{{ total_revenue|floatformat:2 }}
+
                         </strong>
+
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+
+                        Paid Invoices
+
+                        <span class="badge bg-success">
+
+                            {{ paid_invoices }}
+
+                        </span>
+
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+
+                        Pending Invoices
+
+                        <span class="badge bg-warning text-dark">
+
+                            {{ pending_invoices }}
+
+                        </span>
 
                     </li>
 
