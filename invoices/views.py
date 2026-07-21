@@ -11,13 +11,27 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 
 from django.http import HttpResponse
-from reportlab.pdfgen import canvas
-from reportlab.lib.units import inch
 from django.shortcuts import get_object_or_404
-
+from payments.models import Payment
+from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-from reportlab.platypus import Table, TableStyle
+
+from reportlab.platypus import (
+    Table,
+    TableStyle,
+)
+
+from reportlab.pdfbase.pdfmetrics import stringWidth
+
+
+def format_currency(amount):
+    # FIX: "₹" (U+20B9) has no glyph in ReportLab's built-in Helvetica font
+    # (Base-14 PDF fonts), so it was rendering as a missing-glyph box (■).
+    # "Rs." renders correctly with Helvetica without needing a custom TTF font.
+    return f"Rs. {amount:,.2f}"
+
 
 @login_required(login_url="login")
 def invoice_list(request):
@@ -191,13 +205,35 @@ def delete_invoice(request, pk):
         }
     )
 
+
 @login_required(login_url="login")
 def generate_invoice_pdf(request, pk):
-
     invoice = get_object_or_404(
         Invoice,
         pk=pk
     )
+
+    payment = Payment.objects.filter(
+        invoice=invoice
+    ).first()
+
+    # FIX: recompute each line's total as quantity * price instead of
+    # trusting the stored InvoiceItem.total field. If an item was ever
+    # saved with a bad/zero total (e.g. a front-end bug at creation time),
+    # summing the stored values still produces 0.00. quantity * price is
+    # always correct regardless of what got persisted.
+    items = list(invoice.items.all())
+
+    line_totals = []
+    subtotal = Decimal("0.00")
+
+    for item in items:
+        line_total = (item.price * item.quantity).quantize(Decimal("0.01"))
+        line_totals.append(line_total)
+        subtotal += line_total
+
+    gst_amount = (subtotal * Decimal("0.18")).quantize(Decimal("0.01"))
+    total_amount = subtotal + gst_amount
 
     response = HttpResponse(
         content_type="application/pdf"
@@ -211,185 +247,250 @@ def generate_invoice_pdf(request, pk):
 
     width, height = A4
 
-    # ===========================
-    # Header
-    # ===========================
+    # Load Company Logo
+    logo = ImageReader("static/images/logo.png")
 
-    pdf.setFillColor(colors.darkblue)
-    pdf.rect(0, height-70, width, 70, fill=1)
+    pdf.drawImage(
+        logo,
+        40,
+        height - 72,
+        width=42,
+        height=42,
+        mask="auto"
+    )
 
+    # =====================================
+    # COLORS
+    # =====================================
+
+    PRIMARY = colors.HexColor("#1E3A8A")
+    LIGHT = colors.HexColor("#F8FAFC")
+    BORDER = colors.HexColor("#CBD5E1")
+    TEXT = colors.HexColor("#1F2937")
+    GREEN = colors.HexColor("#16A34A")
+    RED = colors.HexColor("#DC2626")
+
+    # =====================================
+    # HEADER
+    # =====================================
+
+    pdf.setFillColor(PRIMARY)
+    pdf.rect(0, height - 80, width, 80, fill=1)
     pdf.setFillColor(colors.white)
-
-    pdf.setFont("Helvetica-Bold", 24)
-
-    pdf.drawString(40, height-45, "INVOXA")
-
+    pdf.setFont("Helvetica-Bold", 26)
+    pdf.drawString(40, height - 45, "INVOXA")
     pdf.setFont("Helvetica", 11)
+    pdf.drawString(40, height - 63, "Professional Invoice Management System")
+    pdf.setFont("Helvetica-Bold", 22)
+    pdf.drawRightString(width - 40, height - 45, "INVOICE")
+    pdf.setFont("Helvetica", 10)
+    pdf.drawRightString(width - 40, height - 62, invoice.invoice_number)
 
-    pdf.drawRightString(
-        width-40,
-        height-45,
-        "Invoice Management System"
-    )
+    # =====================================
+    # COMPANY INFORMATION
+    # =====================================
 
-    # ===========================
-    # Invoice Details
-    # ===========================
+    pdf.setFillColor(TEXT)
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(40, height - 110, "From")
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(40, height - 130, "Invoxa Technologies")
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(40, height - 148, "Pune, Maharashtra")
+    pdf.drawString(40, height - 163, "Phone : +91 9876543210")
+    pdf.drawString(40, height - 178, "support@invoxa.com")
+    pdf.drawString(40, height - 193, "GSTIN : 27ABCDE1234F1Z5")
 
-    pdf.setFillColor(colors.black)
+    # =====================================
+    # BILL TO CARD
+    # =====================================
 
-    pdf.setFont("Helvetica-Bold", 13)
+    pdf.setFillColor(LIGHT)
+    pdf.roundRect(320, height - 220, 235, 115, 8, fill=1, stroke=0)
+    pdf.setStrokeColor(BORDER)
+    pdf.roundRect(320, height - 220, 235, 115, 8)
+    pdf.setFillColor(PRIMARY)
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(335, height - 125, "Bill To")
+    pdf.setFillColor(TEXT)
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(335, height - 145, invoice.customer.name)
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(335, height - 160, invoice.customer.email)
+    pdf.drawString(335, height - 175, invoice.customer.phone)
+    address = invoice.customer.address or "-"
+    pdf.drawString(335, height - 190, address[:40])
 
-    pdf.drawString(40, height-100, "Invoice Details")
+    # =====================================
+    # INVOICE DETAILS BOX
+    # =====================================
 
-    pdf.setFont("Helvetica", 11)
+    pdf.setFillColor(PRIMARY)
+    pdf.rect(40, height - 255, width - 80, 28, fill=1)
+    pdf.setFillColor(colors.white)
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(50, height - 237, "Invoice Details")
+    pdf.setFillColor(TEXT)
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(50, height - 275, f"Invoice No : {invoice.invoice_number}")
+    pdf.drawString(220, height - 275, f"Date : {invoice.invoice_date}")
 
-    pdf.drawString(
-        40,
-        height-120,
-        f"Invoice No : {invoice.invoice_number}"
-    )
+    if invoice.status == "Paid":
+        pdf.setFillColor(GREEN)
+    else:
+        pdf.setFillColor(RED)
 
-    pdf.drawString(
-        40,
-        height-140,
-        f"Date : {invoice.invoice_date}"
-    )
+    pdf.setFont("Helvetica-Bold", 10)
+    pdf.drawRightString(width - 55, height - 275, invoice.status)
+    pdf.setFillColor(TEXT)
 
-    pdf.drawString(
-        40,
-        height-160,
-        f"Status : {invoice.status}"
-    )
+    # =====================================
+    # PRODUCT TABLE
+    # =====================================
 
-    # ===========================
-    # Customer Details
-    # ===========================
+    data = [["Sr.", "Product", "Qty", "Price", "GST", "Total"]]
 
-    pdf.setFont("Helvetica-Bold", 13)
-
-    pdf.drawString(
-        320,
-        height-100,
-        "Customer"
-    )
-
-    pdf.setFont("Helvetica", 11)
-
-    pdf.drawString(
-        320,
-        height-120,
-        invoice.customer.name
-    )
-
-    pdf.drawString(
-        320,
-        height-140,
-        invoice.customer.email
-    )
-
-    pdf.drawString(
-        320,
-        height-160,
-        invoice.customer.phone
-    )
-
-    # ===========================
-    # Product Table
-    # ===========================
-
-    data = [
-        [
-            "Product",
-            "Qty",
-            "Price",
-            "GST",
-            "Total"
-        ]
-    ]
-
-    for item in invoice.items.all():
-
+    for sr, (item, line_total) in enumerate(zip(items, line_totals), start=1):
         data.append([
+            sr,
             item.product.name,
-            str(item.quantity),
-            f"₹ {item.price}",
-            f"{item.gst}%",
-            f"₹ {item.total}"
+            item.quantity,
+            format_currency(item.price),
+            f"{item.gst} %",
+            format_currency(line_total)
         ])
+
+    # =====================================
+    # WATERMARK
+    # =====================================
+    pdf.saveState()
+    pdf.setFont("Helvetica-Bold", 70)
+    pdf.setFillColorRGB(0.95, 0.95, 0.95)
+    pdf.translate(220, 380)
+    pdf.rotate(35)
+    pdf.drawCentredString(0, 0, "INVOXA")
+    pdf.restoreState()
 
     table = Table(
         data,
-        colWidths=[
-            180,
-            60,
-            80,
-            60,
-            100
-        ]
+        colWidths=[40, 180, 55, 80, 55, 100]
     )
 
     table.setStyle(
-
         TableStyle([
-
-            ("BACKGROUND",(0,0),(-1,0),colors.darkblue),
-
-            ("TEXTCOLOR",(0,0),(-1,0),colors.white),
-
-            ("FONTNAME",(0,0),(-1,0),"Helvetica-Bold"),
-
-            ("GRID",(0,0),(-1,-1),1,colors.grey),
-
-            ("BACKGROUND",(0,1),(-1,-1),colors.whitesmoke),
-
-            ("BOTTOMPADDING",(0,0),(-1,0),10),
-
-            ("ALIGN",(1,0),(-1,-1),"CENTER"),
-
+            ("BACKGROUND", (0, 0), (-1, 0), PRIMARY),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, -1), 10),
+            ("BOTTOMPADDING", (0, 0), (-1, 0), 10),
+            ("TOPPADDING", (0, 0), (-1, 0), 10),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 0.5, BORDER),
+            ("BACKGROUND", (0, 1), (-1, -1), colors.white),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ])
-
     )
 
     table.wrapOn(pdf, width, height)
+    table.drawOn(pdf, 40, height - 370)
 
-    table.drawOn(pdf, 40, height-420)
+    # =====================================
+    # GST SUMMARY  (FIX: moved up so it clears the totals box below)
+    # totals box top edge = box_y (120) + box_height (95) = 215
+    # so this block must end comfortably above y=215
+    # =====================================
 
-    # ===========================
-    # Totals
-    # ===========================
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(340, 270, "GST Summary")
 
-    pdf.setFont("Helvetica-Bold", 12)
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(340, 250, f"Taxable : {format_currency(subtotal)}")
+    pdf.drawString(340, 233, f"GST : {format_currency(gst_amount)}")
 
-    pdf.drawRightString(
-        width-40,
-        180,
-        f"Subtotal : ₹ {invoice.subtotal}"
-    )
+    # =====================================
+    # TOTALS BOX
+    # =====================================
 
-    pdf.drawRightString(
-        width-40,
-        160,
-        f"GST : ₹ {invoice.gst_amount}"
-    )
+    box_x = 340
+    box_y = 120
 
-    pdf.drawRightString(
-        width-40,
-        140,
-        f"Grand Total : ₹ {invoice.total_amount}"
-    )
+    pdf.setFillColor(LIGHT)
+    pdf.roundRect(box_x, box_y, 200, 95, 6, fill=1, stroke=0)
+    pdf.setStrokeColor(BORDER)
+    pdf.roundRect(box_x, box_y, 200, 95, 6)
+    pdf.setFillColor(TEXT)
+    pdf.setFont("Helvetica", 10)
 
-    # ===========================
-    # Footer
-    # ===========================
+    pdf.drawString(box_x + 15, box_y + 70, "Subtotal")
+    pdf.drawRightString(box_x + 185, box_y + 70, format_currency(subtotal))
 
-    pdf.setFont("Helvetica-Oblique", 10)
+    pdf.drawString(box_x + 15, box_y + 48, "GST (18%)")
+    pdf.drawRightString(box_x + 185, box_y + 48, format_currency(gst_amount))
 
-    pdf.drawCentredString(
-        width/2,
-        50,
-        "Thank you for choosing Invoxa!"
-    )
+    pdf.setStrokeColor(colors.grey)
+    pdf.line(box_x + 10, box_y + 35, box_x + 190, box_y + 35)
+
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(box_x + 15, box_y + 15, "Grand Total")
+    pdf.drawRightString(box_x + 185, box_y + 15, format_currency(total_amount))
+
+    # =====================================
+    # PAYMENT STATUS
+    # =====================================
+
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.setFillColor(TEXT)
+    pdf.drawString(40, 175, "Payment Status")
+
+    if invoice.status == "Paid":
+        pdf.setFillColor(GREEN)
+    else:
+        pdf.setFillColor(RED)
+
+    pdf.roundRect(40, 145, 100, 22, 5, fill=1, stroke=0)
+    pdf.setFillColor(colors.white)
+    pdf.drawCentredString(90, 152, invoice.status)
+
+    # =====================================
+    # PAYMENT DETAILS
+    # =====================================
+
+    pdf.setFillColor(TEXT)
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(40, 120, "Payment Details")
+    pdf.setFont("Helvetica", 10)
+
+    if payment:
+        pdf.drawString(40, 102, f"Method : {payment.payment_method}")
+        pdf.drawString(40, 86, f"Reference : {payment.reference_number}")
+    else:
+        pdf.drawString(40, 102, "Payment Pending")
+
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(40, 58, "Bank Details")
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(40, 42, "Bank : HDFC Bank")
+    pdf.drawString(40, 28, "A/C : 123456789012")
+
+    # =====================================
+    # SIGNATURE
+    # =====================================
+
+    pdf.setFillColor(TEXT)
+    pdf.line(420, 85, 540, 85)
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(430, 70, "Authorized Signatory")
+
+    # =====================================
+    # FOOTER
+    # =====================================
+
+    pdf.setStrokeColor(BORDER)
+    pdf.line(40, 50, width - 40, 50)
+    pdf.setFillColor(colors.grey)
+    pdf.setFont("Helvetica-Oblique", 9)
+    pdf.drawCentredString(width / 2, 35, "This is a computer generated invoice. No signature required.")
+    pdf.drawCentredString(width / 2, 20, "Thank you for choosing INVOXA.")
 
     pdf.save()
 
