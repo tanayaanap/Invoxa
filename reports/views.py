@@ -32,6 +32,10 @@ def report_dashboard(request):
         status="Pending"
     ).count()
 
+    overdue_invoices = Invoice.objects.filter(
+        status="Overdue"
+    ).count()
+
     # ==========================================
     # Revenue
     # ==========================================
@@ -140,6 +144,8 @@ def report_dashboard(request):
         "paid_invoices": paid_invoices,
 
         "pending_invoices": pending_invoices,
+
+        "overdue_invoices": overdue_invoices,
 
         "revenue": float(revenue),
 

@@ -13,6 +13,7 @@ class Invoice(models.Model):
     )
 
     invoice_date = models.DateField(auto_now_add=True)
+    due_date = models.DateField()
 
     subtotal = models.DecimalField(
         max_digits=10,
@@ -36,7 +37,9 @@ class Invoice(models.Model):
         max_length=20,
         choices=[
             ("Paid", "Paid"),
-            ("Pending", "Pending")
+            ("Pending", "Pending"),
+             ("Overdue","Overdue")
+
         ],
         default="Pending"
     )

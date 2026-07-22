@@ -3,13 +3,15 @@ from decimal import Decimal
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-
+from django.conf import settings
 from .models import Invoice, InvoiceItem
 from .forms import InvoiceForm
 from products.models import Product
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
-
+from django.core.mail import EmailMessage
+from django.http import HttpResponse
+from io import BytesIO
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from payments.models import Payment
@@ -17,7 +19,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
-
+from django.utils import timezone
 from reportlab.platypus import (
     Table,
     TableStyle,
@@ -37,6 +39,19 @@ def format_currency(amount):
 def invoice_list(request):
 
     invoices = Invoice.objects.all().order_by("-invoice_date")
+
+    today = timezone.now().date()
+
+    for invoice in invoices:
+
+        if (
+            invoice.status == "Pending"
+            and invoice.due_date
+            and invoice.due_date < today
+        ):
+
+            invoice.status = "Overdue"
+            invoice.save()
 
     return render(
         request,
@@ -269,6 +284,7 @@ def generate_invoice_pdf(request, pk):
     TEXT = colors.HexColor("#1F2937")
     GREEN = colors.HexColor("#16A34A")
     RED = colors.HexColor("#DC2626")
+    ORANGE = colors.HexColor("#F59E0B")
 
     # =====================================
     # HEADER
@@ -327,21 +343,56 @@ def generate_invoice_pdf(request, pk):
 
     pdf.setFillColor(PRIMARY)
     pdf.rect(40, height - 255, width - 80, 28, fill=1)
+
     pdf.setFillColor(colors.white)
     pdf.setFont("Helvetica-Bold", 11)
-    pdf.drawString(50, height - 237, "Invoice Details")
+
+    pdf.drawString(
+    50,
+    height - 237,
+    "Invoice Details"
+)
+
     pdf.setFillColor(TEXT)
     pdf.setFont("Helvetica", 10)
-    pdf.drawString(50, height - 275, f"Invoice No : {invoice.invoice_number}")
-    pdf.drawString(220, height - 275, f"Date : {invoice.invoice_date}")
 
+    pdf.drawString(
+    50,
+    height - 275,
+    f"Invoice No : {invoice.invoice_number}"
+)
+
+    pdf.drawString(
+    220,
+    height - 275,
+    f"Date : {invoice.invoice_date}"
+)
+
+# NEW LINE
+    pdf.drawString(
+    50,
+    height - 292,
+    f"Due Date : {invoice.due_date}"
+)
+
+# Status
     if invoice.status == "Paid":
         pdf.setFillColor(GREEN)
+
+    elif invoice.status == "Pending":
+        pdf.setFillColor(ORANGE)
+
     else:
         pdf.setFillColor(RED)
 
     pdf.setFont("Helvetica-Bold", 10)
-    pdf.drawRightString(width - 55, height - 275, invoice.status)
+
+    pdf.drawRightString(
+    width - 55,
+    height - 292,
+    invoice.status
+)
+
     pdf.setFillColor(TEXT)
 
     # =====================================
@@ -495,3 +546,78 @@ def generate_invoice_pdf(request, pk):
     pdf.save()
 
     return response
+
+@login_required(login_url="login")
+def email_invoice(request, pk):
+
+    invoice = get_object_or_404(
+        Invoice,
+        pk=pk
+    )
+
+    customer_email = invoice.customer.email
+
+    if not customer_email:
+
+        messages.error(
+            request,
+            "Customer email not found."
+        )
+
+        return redirect(
+            "view_invoice",
+            pk=pk
+        )
+
+    # Generate PDF
+    pdf_response = generate_invoice_pdf(request, pk)
+
+    pdf_bytes = pdf_response.content
+
+    email = EmailMessage(
+
+        subject=f"Invoice {invoice.invoice_number}",
+
+        body=f"""
+Hello {invoice.customer.name},
+
+Please find your invoice attached.
+
+Invoice Number : {invoice.invoice_number}
+
+Amount : ₹{invoice.total_amount}
+
+Thank you for choosing Invoxa.
+
+Regards,
+Invoxa Team
+""",
+
+        from_email=settings.EMAIL_HOST_USER,
+
+        to=[customer_email]
+
+    )
+
+    email.attach(
+
+        f"{invoice.invoice_number}.pdf",
+
+        pdf_bytes,
+
+        "application/pdf"
+
+    )
+
+    email.send()
+
+    messages.success(
+
+        request,
+
+        "Invoice emailed successfully."
+
+    )
+
+    # THIS IS THE FIX
+    return redirect("invoice_list")

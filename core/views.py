@@ -2,13 +2,13 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db.models import Sum
-
+from .forms import EditProfileForm
 from invoices.models import Invoice
 from payments.models import Payment
-
+from django.contrib.auth.decorators import login_required
 from customers.models import Customer
 from products.models import Product
-
+from django.contrib import messages
 
 def login_view(request):
 
@@ -108,3 +108,50 @@ def dashboard(request):
 def logout_view(request):
     logout(request)
     return redirect("login")
+
+@login_required(login_url="login")
+def profile(request):
+
+    return render(
+        request,
+        "core/profile.html",
+        {
+            "user": request.user
+        }
+    )
+
+
+@login_required(login_url="login")
+def edit_profile(request):
+
+    if request.method == "POST":
+
+        form = EditProfileForm(
+            request.POST,
+            instance=request.user
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Profile updated successfully!"
+            )
+
+            return redirect("profile")
+
+    else:
+
+        form = EditProfileForm(
+            instance=request.user
+        )
+
+    return render(
+        request,
+        "core/edit_profile.html",
+        {
+            "form": form
+        }
+    )
