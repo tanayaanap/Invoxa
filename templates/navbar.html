@@ -27,6 +27,9 @@
 
                     <span class="fw-semibold">
                         {{ request.user.username }}
+                        <small class="text-muted ms-2">
+                            ({{ request.user.groups.first.name }})
+                        </small>
                     </span>
 
                 </a>

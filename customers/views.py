@@ -5,8 +5,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Customer
 from .forms import CustomerForm
 
+from core.decorators import allowed_roles
+
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant", "Staff"])
 def customer_list(request):
 
     customers = Customer.objects.all()
@@ -21,6 +24,7 @@ def customer_list(request):
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant"])
 def add_customer(request):
 
     if request.method == "POST":
@@ -52,6 +56,7 @@ def add_customer(request):
     )
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant"])
 def edit_customer(request, id):
 
     customer = get_object_or_404(Customer, id=id)
@@ -84,6 +89,7 @@ def edit_customer(request, id):
     )
 
 @login_required(login_url="login")
+@allowed_roles(["Admin"])
 def delete_customer(request, id):
 
     customer = get_object_or_404(Customer, id=id)

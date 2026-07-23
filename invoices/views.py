@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+from core.decorators import allowed_roles
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -36,6 +38,7 @@ def format_currency(amount):
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant", "Staff"])
 def invoice_list(request):
 
     invoices = Invoice.objects.all().order_by("-invoice_date")
@@ -63,6 +66,7 @@ def invoice_list(request):
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant"])
 def add_invoice(request):
 
     products = Product.objects.all()
@@ -178,6 +182,7 @@ def view_invoice(request, pk):
     )
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant"])
 def edit_invoice(request, pk):
 
     invoice = get_object_or_404(
@@ -217,6 +222,7 @@ def edit_invoice(request, pk):
     )
 
 @login_required(login_url="login")
+@allowed_roles(["Admin"])
 def delete_invoice(request, pk):
 
     invoice = get_object_or_404(
@@ -245,6 +251,7 @@ def delete_invoice(request, pk):
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant", "Staff"])
 def generate_invoice_pdf(request, pk):
     invoice = get_object_or_404(
         Invoice,

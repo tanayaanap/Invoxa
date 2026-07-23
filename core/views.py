@@ -10,6 +10,8 @@ from customers.models import Customer
 from products.models import Product
 from django.contrib import messages
 
+from core.decorators import allowed_roles
+
 def login_view(request):
 
     if request.user.is_authenticated:
@@ -36,6 +38,8 @@ def login_view(request):
     return render(request, "login.html")
 
 
+@login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant", "Staff"])
 def dashboard(request):
 
     if not request.user.is_authenticated:

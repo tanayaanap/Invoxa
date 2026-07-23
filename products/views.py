@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Product
 from .forms import ProductForm
+from core.decorators import allowed_roles
 
 
+@allowed_roles(["Admin", "Accountant"])
 def product_list(request):
 
     products = Product.objects.all()
@@ -14,7 +16,7 @@ def product_list(request):
         {"products": products}
     )
 
-
+@allowed_roles(["Admin"])
 def add_product(request):
 
     if request.method == "POST":
@@ -35,7 +37,7 @@ def add_product(request):
         {"form": form}
     )
 
-
+@allowed_roles(["Admin"])
 def edit_product(request, pk):
 
     product = get_object_or_404(Product, pk=pk)
@@ -66,6 +68,7 @@ def edit_product(request, pk):
     )
 
 
+@allowed_roles(["Admin"])
 def delete_product(request, pk):
 
     product = get_object_or_404(Product, pk=pk)

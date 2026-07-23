@@ -4,12 +4,16 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 
+from core.decorators import allowed_roles
+
 from .models import Payment
 from .forms import PaymentForm
 from invoices.models import Invoice
 
 
+
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant"])
 def payment_list(request):
 
     payments = Payment.objects.select_related(
@@ -27,6 +31,7 @@ def payment_list(request):
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant"])
 def add_payment(request):
 
     if request.method == "POST":
@@ -69,6 +74,7 @@ def add_payment(request):
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant"])
 def get_invoice_details(request, invoice_id):
 
     invoice = get_object_or_404(Invoice, id=invoice_id)
