@@ -14,6 +14,12 @@ class InvoiceForm(forms.ModelForm):
 
         widgets = {
 
+            "customer": forms.Select(
+                attrs={
+                    "class": "form-select"
+                }
+            ),
+
             "due_date": forms.DateInput(
                 attrs={
                     "type": "date",
