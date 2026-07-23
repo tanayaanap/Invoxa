@@ -28,7 +28,8 @@ class Payment(models.Model):
 
     reference_number = models.CharField(
         max_length=100,
-        blank=True
+        blank=True,
+        null=True
     )
 
     def __str__(self):
