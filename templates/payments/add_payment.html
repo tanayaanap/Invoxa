@@ -2,122 +2,161 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container-fluid p-3 p-md-4">
 
-    <div class="card shadow">
+    <div class="row justify-content-center">
 
-        <div class="card-header bg-success text-white">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-7">
 
-            <h3>Record Payment</h3>
+            <div class="card shadow border-0">
 
-        </div>
+                <div class="card-header bg-success text-white">
 
-        <div class="card-body">
-
-            <form method="POST">
-
-                {% csrf_token %}
-
-                <!-- Invoice -->
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Invoice
-                    </label>
-
-                    {{ form.invoice }}
+                    <h3 class="mb-0">
+                        <i class="bi bi-wallet2 me-2"></i>
+                        Record Payment
+                    </h3>
 
                 </div>
 
-                <!-- Customer -->
+                <div class="card-body">
 
-                <div class="mb-3">
+                    <form method="POST">
 
-                    <label class="form-label">
-                        Customer
-                    </label>
+                        {% csrf_token %}
 
-                    <input
-                        type="text"
-                        id="customer"
-                        class="form-control"
-                        readonly>
+                        <!-- Invoice -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+
+                                Invoice
+
+                            </label>
+
+                            {{ form.invoice }}
+
+                        </div>
+
+                        <!-- Customer -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+
+                                Customer
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="customer"
+                                class="form-control"
+                                placeholder="Customer Name"
+                                readonly>
+
+                        </div>
+
+                        <!-- Invoice Total -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+
+                                Invoice Total
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="amount"
+                                class="form-control"
+                                placeholder="Invoice Amount"
+                                readonly>
+
+                        </div>
+
+                        <!-- Status -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+
+                                Current Status
+
+                            </label>
+
+                            <input
+                                type="text"
+                                id="status"
+                                class="form-control"
+                                placeholder="Invoice Status"
+                                readonly>
+
+                        </div>
+
+                        <!-- Payment Method -->
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+
+                                Payment Method
+
+                            </label>
+
+                            {{ form.payment_method }}
+
+                        </div>
+
+                        <!-- Reference Number -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-semibold">
+
+                                Transaction / Reference Number
+
+                            </label>
+
+                            {{ form.reference_number }}
+
+                        </div>
+
+                        <hr>
+
+                        <!-- Buttons -->
+
+                        <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
+
+                            <button
+                                type="submit"
+                                class="btn btn-success">
+
+                                <i class="bi bi-check-circle-fill me-1"></i>
+
+                                Record Payment
+
+                            </button>
+
+                            <a
+                                href="{% url 'payment_list' %}"
+                                class="btn btn-secondary">
+
+                                <i class="bi bi-x-circle-fill me-1"></i>
+
+                                Cancel
+
+                            </a>
+
+                        </div>
+
+                    </form>
 
                 </div>
 
-                <!-- Amount -->
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Invoice Total
-                    </label>
-
-                    <input
-                        type="text"
-                        id="amount"
-                        class="form-control"
-                        readonly>
-
-                </div>
-
-                <!-- Status -->
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Current Status
-                    </label>
-
-                    <input
-                        type="text"
-                        id="status"
-                        class="form-control"
-                        readonly>
-
-                </div>
-
-                <!-- Payment Method -->
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Payment Method
-                    </label>
-
-                    {{ form.payment_method }}
-
-                </div>
-
-                <!-- Reference Number -->
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Transaction / Reference Number
-                    </label>
-
-                    {{ form.reference_number }}
-
-                </div>
-
-                <button
-                    type="submit"
-                    class="btn btn-success">
-
-                    Record Payment
-
-                </button>
-
-                <a
-                    href="{% url 'payment_list' %}"
-                    class="btn btn-secondary">
-
-                    Cancel
-
-                </a>
-
-            </form>
+            </div>
 
         </div>
 
@@ -129,8 +168,7 @@
 
 document.addEventListener("DOMContentLoaded", function(){
 
-    const invoiceSelect =
-        document.getElementById("id_invoice");
+    const invoiceSelect = document.getElementById("id_invoice");
 
     invoiceSelect.addEventListener("change", function(){
 
@@ -152,14 +190,17 @@ document.addEventListener("DOMContentLoaded", function(){
 
         .then(data => {
 
-            document.getElementById("customer").value =
-                data.customer;
+            document.getElementById("customer").value = data.customer;
 
-            document.getElementById("amount").value =
-                "₹ " + data.amount;
+            document.getElementById("amount").value = "₹ " + data.amount;
 
-            document.getElementById("status").value =
-                data.status;
+            document.getElementById("status").value = data.status;
+
+        })
+
+        .catch(error => {
+
+            console.error("Error:", error);
 
         });
 

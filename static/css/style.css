@@ -33,14 +33,20 @@ ul{list-style:none;margin:0;padding:0}
     width:260px;
     background:var(--sidebar);
     position:fixed;
-    left:0;top:0;bottom:0;
+    left:0;
+    top:0;
+    bottom:0;
     color:#fff;
     overflow-y:auto;
+    transition:.3s ease;
+    z-index:1000;
 }
 .main{
     margin-left:260px;
     width:calc(100% - 260px);
     min-height:100vh;
+    display:flex;
+    flex-direction:column;
 }
 .content{
     padding:30px;
@@ -81,8 +87,10 @@ ul{list-style:none;margin:0;padding:0}
 
 /* Navbar */
 .navbar{
-    height:75px;
+    min-height:75px;
     border-bottom:1px solid var(--border);
+    background:#fff;
+    padding:0 20px;
 }
 .navbar h4{color:var(--text)}
 .dropdown img{
@@ -91,6 +99,7 @@ ul{list-style:none;margin:0;padding:0}
 
 /* Footer */
 .footer{
+    margin-top:auto;
     border-top:1px solid var(--border);
     background:#fff;
     padding:18px 25px;
@@ -188,19 +197,7 @@ ul{list-style:none;margin:0;padding:0}
     box-shadow:0 0 0 .2rem rgba(37,99,235,.15);
 }
 
-/* Responsive */
-@media(max-width:992px){
-.sidebar{width:80px}
-.logo span,.sidebar a span{display:none}
-.main{margin-left:80px;width:calc(100% - 80px)}
-}
-@media(max-width:768px){
-.sidebar{display:none}
-.main{margin-left:0;width:100%}
-.content{padding:20px}
-.dashboard-card{margin-bottom:15px}
-.login-card{width:92%}
-}
+
 
 /* =========================
 Invoxa - style.css (Part 2)
@@ -377,5 +374,244 @@ select.form-select,.form-control,.form-select{
  margin-bottom:10px;
 }
 }
+/* ===========================
+   Mobile Responsive Sidebar
+=========================== */
 
+.menu-toggle{
+    display:none;
+    font-size:28px;
+    cursor:pointer;
+    color:var(--primary);
+}
+
+@media(max-width:768px){
+
+.menu-toggle{
+    display:block;
+}
+
+.sidebar{
+    left:-260px;
+    width:260px;
+}
+
+.sidebar.show{
+    left:0;
+}
+
+.main{
+    margin-left:0;
+    width:100%;
+}
+
+.content{
+    padding:15px;
+}
+
+.login-card{
+    width:95%;
+}
+
+}
+
+@media (max-width:768px){
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:-260px;
+    width:260px;
+    height:100vh;
+    background:#1E293B;
+    z-index:2000;
+    overflow-y:auto;
+    transition:left .3s ease;
+}
+
+.sidebar.show{
+    left:0 !important;
+}
+
+.main{
+    margin-left:0 !important;
+    width:100% !important;
+}
+
+.menu-toggle{
+    display:block;
+    cursor:pointer;
+}
+
+.content{
+    padding:15px;
+}
+
+}
+
+/* ==========================
+   Responsive Forms
+========================== */
+
+form p{
+    margin-bottom:18px;
+}
+
+form label{
+    font-weight:600;
+    margin-bottom:6px;
+    display:block;
+}
+
+form input,
+form select,
+form textarea{
+    width:100%;
+    border-radius:10px;
+}
+
+textarea{
+    min-height:120px;
+}
+
+@media (max-width:768px){
+
+    .card{
+        margin:0;
+    }
+
+    .card-header h3{
+        font-size:22px;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+}
+
+/* ===========================
+   Reports Responsive
+=========================== */
+
+#revenueChart{
+    width:100% !important;
+    height:350px !important;
+}
+
+#statusChart{
+    max-height:320px;
+}
+
+@media(max-width:768px){
+
+    #revenueChart{
+        height:260px !important;
+    }
+
+    #statusChart{
+        height:260px !important;
+    }
+
+}
+
+/* ===========================
+   Responsive Tables
+=========================== */
+
+.table-responsive{
+    overflow-x:auto;
+}
+
+.table td,
+.table th{
+    white-space:nowrap;
+    vertical-align:middle;
+}
+
+/* ===========================
+   Responsive Cards
+=========================== */
+
+@media (max-width:768px){
+
+.card{
+    margin-bottom:20px;
+}
+
+.card-body{
+    padding:18px;
+}
+
+h2{
+    font-size:24px;
+}
+
+h3{
+    font-size:22px;
+}
+
+.btn{
+    margin-bottom:10px;
+}
+
+.d-flex.gap-2 .btn{
+    width:100%;
+}
+
+@media(min-width:576px){
+.d-flex.gap-2 .btn{
+    width:auto;
+}
+}
+
+.d-flex.justify-content-between{
+    flex-direction:column;
+    align-items:flex-start!important;
+    gap:15px;
+}
+
+}
+
+img{
+    max-width:100%;
+    height:auto;
+}
+
+canvas{
+    max-width:100%;
+}
+
+.card{
+    border:none;
+}
+
+.table-responsive{
+    border-radius:12px;
+}
+
+.form-control,
+.form-select{
+    min-height:45px;
+}
+
+@media(max-width:576px){
+
+h2{
+    font-size:22px;
+}
+
+h3{
+    font-size:20px;
+}
+
+.navbar .dropdown span{
+    display:none;
+}
+
+.content{
+    padding:12px;
+}
+
+}
 

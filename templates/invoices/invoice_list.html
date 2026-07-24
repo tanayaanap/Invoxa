@@ -2,120 +2,143 @@
 
 {% block content %}
 
-<div class="container-fluid p-4">
+<div class="container-fluid p-3 p-md-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
 
-        <h2>Invoices</h2>
+        <h2 class="mb-0">Invoices</h2>
 
         <a href="{% url 'add_invoice' %}" class="btn btn-primary">
-            + Create Invoice
+            <i class="bi bi-plus-lg"></i>
+            Create Invoice
         </a>
 
     </div>
 
-    <table class="table table-hover shadow-sm">
+    <div class="card shadow-sm border-0">
 
-        <thead>
+        <div class="card-body p-0">
 
-            <tr>
+            <div class="table-responsive">
 
-                <th>Invoice No.</th>
+                <table class="table table-hover align-middle mb-0">
 
-                <th>Customer</th>
+                    <thead class="table-light">
 
-                <th>Date</th>
+                        <tr>
 
-                <th>Due Date</th>
+                            <th>Invoice No.</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th style="min-width:260px;">Actions</th>
 
-                <th>Status</th>
+                        </tr>
 
-                <th>Actions</th>
+                    </thead>
 
-            </tr>
+                    <tbody>
 
-        </thead>
+                    {% for invoice in invoices %}
 
-        <tbody>
+                        <tr>
 
-        {% for invoice in invoices %}
+                            <td>{{ invoice.invoice_number }}</td>
 
-            <tr>
+                            <td>{{ invoice.customer.name }}</td>
 
-                <td>{{ invoice.invoice_number }}</td>
+                            <td>{{ invoice.invoice_date }}</td>
 
-                <td>{{ invoice.customer.name }}</td>
+                            <td>{{ invoice.due_date }}</td>
 
-                <td>{{ invoice.invoice_date }}</td>
+                            <td>
 
-                <td>{{ invoice.due_date }}</td>
+                                {% if invoice.status == "Paid" %}
 
-                <td>
+                                    <span class="badge bg-success">
+                                        Paid
+                                    </span>
 
-                    {% if invoice.status == "Paid" %}
+                                {% elif invoice.status == "Pending" %}
 
-<span class="badge bg-success">
-    Paid
-</span>
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
 
-{% elif invoice.status == "Pending" %}
+                                {% else %}
 
-<span class="badge bg-warning text-dark">
-    Pending
-</span>
+                                    <span class="badge bg-danger">
+                                        Overdue
+                                    </span>
 
-{% else %}
+                                {% endif %}
 
-<span class="badge bg-danger">
-    Overdue
-</span>
+                            </td>
 
-{% endif %}
+                            <td>
 
-                </td>
+                                <div class="d-flex flex-wrap gap-2">
 
-                <td>
+                                    <a href="{% url 'view_invoice' invoice.id %}"
+                                       class="btn btn-info btn-sm">
+                                        <i class="bi bi-eye"></i>
+                                        <span class="d-none d-lg-inline"> View</span>
+                                    </a>
 
-    <div class="d-flex flex-wrap gap-2">
+                                    <a href="{% url 'edit_invoice' invoice.id %}"
+                                       class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil-square"></i>
+                                        <span class="d-none d-lg-inline"> Edit</span>
+                                    </a>
 
-        <a href="{% url 'view_invoice' invoice.id %}"
-           class="btn btn-info btn-sm">
-            View
-        </a>
+                                    <a href="{% url 'delete_invoice' invoice.id %}"
+                                       class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                        <span class="d-none d-lg-inline"> Delete</span>
+                                    </a>
 
-        <a href="{% url 'edit_invoice' invoice.id %}"
-           class="btn btn-warning btn-sm">
-            Edit
-        </a>
+                                    <a href="{% url 'generate_invoice_pdf' invoice.id %}"
+                                       class="btn btn-primary btn-sm">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                        <span class="d-none d-lg-inline"> PDF</span>
+                                    </a>
 
-        <a href="{% url 'delete_invoice' invoice.id %}"
-           class="btn btn-danger btn-sm">
-            Delete
-        </a>
+                                    <a href="{% url 'email_invoice' invoice.id %}"
+                                       class="btn btn-success btn-sm">
+                                        <i class="bi bi-envelope-fill"></i>
+                                        <span class="d-none d-lg-inline"> Email</span>
+                                    </a>
 
-        <a href="{% url 'generate_invoice_pdf' invoice.id %}"
-           class="btn btn-primary btn-sm">
-            <i class="bi bi-file-earmark-pdf"></i>
-            PDF
-        </a>
+                                </div>
 
-        <a href="{% url 'email_invoice' invoice.id %}"
-           class="btn btn-success btn-sm">
-            <i class="bi bi-envelope-fill"></i>
-            Email
-        </a>
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td colspan="6" class="text-center py-4">
+
+                                No invoices found.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
 
     </div>
-
-</td>
-
-            </tr>
-
-        {% endfor %}
-
-        </tbody>
-
-    </table>
 
 </div>
 

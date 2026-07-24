@@ -2,93 +2,143 @@
 
 {% block content %}
 
-<div class="container-fluid p-4">
+<div class="container-fluid p-3 p-md-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
 
-        <h2>Products</h2>
+        <h2 class="mb-0">Products</h2>
 
         <a href="{% url 'add_product' %}" class="btn btn-primary">
-            + Add Product
+            <i class="bi bi-plus-lg"></i>
+            Add Product
         </a>
 
     </div>
 
-    <table class="table table-hover shadow-sm">
+    <div class="card shadow-sm border-0">
 
-        <thead>
+        <div class="card-body p-0">
 
-            <tr>
+            <div class="table-responsive">
 
-                <th>Name</th>
+                <table class="table table-hover align-middle mb-0">
 
-                <th>Description</th>
+                    <thead class="table-light">
 
-                <th>Price</th>
+                        <tr>
 
-                <th>GST (%)</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>GST (%)</th>
+                            <th>Stock</th>
+                            <th style="min-width:170px;">Actions</th>
 
-                <th>Stock</th>
+                        </tr>
 
-                <th>Actions</th>
+                    </thead>
 
-            </tr>
+                    <tbody>
 
-        </thead>
+                        {% for product in products %}
 
-        <tbody>
+                        <tr>
 
-            {% for product in products %}
+                            <td>
+                                <strong>{{ product.name }}</strong>
+                            </td>
 
-            <tr>
+                            <td>
+                                {{ product.description|truncatechars:40 }}
+                            </td>
 
-                <td>{{ product.name }}</td>
+                            <td>
+                                ₹ {{ product.price }}
+                            </td>
 
-                <td>{{ product.description|truncatechars:40 }}</td>
+                            <td>
+                                {{ product.gst }}%
+                            </td>
 
-                <td>₹ {{ product.price }}</td>
+                            <td>
 
-                <td>{{ product.gst }}%</td>
+                                {% if product.stock > 20 %}
 
-                <td>{{ product.stock }}</td>
+                                    <span class="badge bg-success">
+                                        {{ product.stock }}
+                                    </span>
 
-                <td>
+                                {% elif product.stock > 5 %}
 
-                    <a href="{% url 'edit_product' product.id %}"
-                       class="btn btn-warning btn-sm">
+                                    <span class="badge bg-warning text-dark">
+                                        {{ product.stock }}
+                                    </span>
 
-                        Edit
+                                {% else %}
 
-                    </a>
+                                    <span class="badge bg-danger">
+                                        {{ product.stock }}
+                                    </span>
 
-                    <a href="{% url 'delete_product' product.id %}"
-                       class="btn btn-danger btn-sm">
+                                {% endif %}
 
-                        Delete
+                            </td>
 
-                    </a>
+                            <td>
 
-                </td>
+                                <div class="d-flex flex-wrap gap-2">
 
-            </tr>
+                                    <a href="{% url 'edit_product' product.id %}"
+                                       class="btn btn-warning btn-sm">
 
-            {% empty %}
+                                        <i class="bi bi-pencil-square"></i>
 
-            <tr>
+                                        <span class="d-none d-lg-inline">
+                                            Edit
+                                        </span>
 
-                <td colspan="6" class="text-center">
+                                    </a>
 
-                    No products found.
+                                    <a href="{% url 'delete_product' product.id %}"
+                                       class="btn btn-danger btn-sm">
 
-                </td>
+                                        <i class="bi bi-trash"></i>
 
-            </tr>
+                                        <span class="d-none d-lg-inline">
+                                            Delete
+                                        </span>
 
-            {% endfor %}
+                                    </a>
 
-        </tbody>
+                                </div>
 
-    </table>
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="6" class="text-center py-4">
+
+                                No products found.
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

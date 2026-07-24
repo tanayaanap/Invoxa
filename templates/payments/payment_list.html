@@ -4,77 +4,76 @@
 
 <div class="container-fluid p-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
 
-        <h2>Payments</h2>
+        <h2 class="mb-0">Payments</h2>
 
         <a href="{% url 'add_payment' %}" class="btn btn-primary">
-
             + Record Payment
-
         </a>
 
     </div>
 
-    <table class="table table-hover shadow-sm">
+    <div class="table-responsive">
 
-        <thead>
+        <table class="table table-hover shadow-sm align-middle">
 
-            <tr>
+            <thead class="table-light">
 
-                <th>Invoice</th>
+                <tr>
 
-                <th>Customer</th>
+                    <th>Invoice</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>Date</th>
+                    <th>Reference</th>
 
-                <th>Amount</th>
+                </tr>
 
-                <th>Method</th>
+            </thead>
 
-                <th>Date</th>
+            <tbody>
 
-                <th>Reference</th>
+                {% for payment in payments %}
 
-            </tr>
+                <tr>
 
-        </thead>
+                    <td>{{ payment.invoice.invoice_number }}</td>
 
-        <tbody>
+                    <td>{{ payment.invoice.customer.name }}</td>
 
-        {% for payment in payments %}
+                    <td>₹ {{ payment.amount }}</td>
 
-            <tr>
+                    <td>
+                        <span class="badge bg-primary">
+                            {{ payment.payment_method }}
+                        </span>
+                    </td>
 
-                <td>{{ payment.invoice.invoice_number }}</td>
+                    <td>{{ payment.payment_date }}</td>
 
-                <td>{{ payment.invoice.customer.name }}</td>
+                    <td>{{ payment.reference_number }}</td>
 
-                <td>₹ {{ payment.amount }}</td>
+                </tr>
 
-                <td>{{ payment.payment_method }}</td>
+                {% empty %}
 
-                <td>{{ payment.payment_date }}</td>
+                <tr>
 
-                <td>{{ payment.reference_number }}</td>
+                    <td colspan="6" class="text-center py-4">
+                        No payments found.
+                    </td>
 
-            </tr>
+                </tr>
 
-        {% empty %}
+                {% endfor %}
 
-            <tr>
+            </tbody>
 
-                <td colspan="6" class="text-center">
+        </table>
 
-                    No payments found.
-
-                </td>
-
-            </tr>
-
-        {% endfor %}
-
-        </tbody>
-
-    </table>
+    </div>
 
 </div>
 

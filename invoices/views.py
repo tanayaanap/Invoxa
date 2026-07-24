@@ -579,11 +579,13 @@ def generate_invoice_pdf(request, pk):
 
 @login_required(login_url="login")
 def email_invoice(request, pk):
+    
 
     invoice = get_object_or_404(
         Invoice,
         pk=pk
     )
+    
 
     customer_email = invoice.customer.email
 
@@ -598,9 +600,11 @@ def email_invoice(request, pk):
             "view_invoice",
             pk=pk
         )
+ 
 
     # Generate PDF
     pdf_response = generate_invoice_pdf(request, pk)
+    
 
     pdf_bytes = pdf_response.content
 
@@ -638,8 +642,10 @@ Invoxa Team
         "application/pdf"
 
     )
+    print("Sending email to:", customer_email)
 
-    email.send()
+    email.send(fail_silently=False)
+    print("Email sent successfully")
 
     messages.success(
 

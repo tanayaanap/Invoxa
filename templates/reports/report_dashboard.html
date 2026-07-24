@@ -2,13 +2,15 @@
 
 {% block content %}
 
-<div class="container-fluid py-4">
+<div class="container-fluid p-3 p-md-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- Header -->
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
 
         <div>
 
-            <h2 class="fw-bold">
+            <h2 class="fw-bold mb-1">
                 Reports Dashboard
             </h2>
 
@@ -20,171 +22,171 @@
 
     </div>
 
-    <!-- ===================== Statistics Cards ===================== -->
+    <!-- Statistics Cards -->
 
-    <div class="row g-4">
+    <div class="row g-3">
 
-        <div class="col-md-3">
+        <div class="col-6 col-lg-3">
 
-            <div class="card shadow border-0">
+            <div class="dashboard-card h-100">
 
-                <div class="card-body">
+                <div>
 
-                    <h6 class="text-muted">
-                        Customers
-                    </h6>
+                    <h6>Customers</h6>
 
-                    <h2 class="fw-bold text-primary">
+                    <h2 class="text-primary">
                         {{ total_customers }}
                     </h2>
 
                 </div>
 
+                <i class="bi bi-people-fill card-icon"></i>
+
             </div>
 
         </div>
 
-        <div class="col-md-3">
+        <div class="col-6 col-lg-3">
 
-            <div class="card shadow border-0">
+            <div class="dashboard-card h-100">
 
-                <div class="card-body">
+                <div>
 
-                    <h6 class="text-muted">
-                        Products
-                    </h6>
+                    <h6>Products</h6>
 
-                    <h2 class="fw-bold text-success">
+                    <h2 class="text-success">
                         {{ total_products }}
                     </h2>
 
                 </div>
 
+                <i class="bi bi-box-seam card-icon"></i>
+
             </div>
 
         </div>
 
-        <div class="col-md-3">
+        <div class="col-6 col-lg-3">
 
-            <div class="card shadow border-0">
+            <div class="dashboard-card h-100">
 
-                <div class="card-body">
+                <div>
 
-                    <h6 class="text-muted">
-                        Total Invoices
-                    </h6>
+                    <h6>Invoices</h6>
 
-                    <h2 class="fw-bold text-warning">
+                    <h2 class="text-warning">
                         {{ total_invoices }}
                     </h2>
 
                 </div>
 
+                <i class="bi bi-file-earmark-text card-icon"></i>
+
             </div>
 
         </div>
 
-        <div class="col-md-3">
+        <div class="col-6 col-lg-3">
 
-            <div class="card shadow border-0">
+            <div class="dashboard-card h-100">
 
-                <div class="card-body">
+                <div>
 
-                    <h6 class="text-muted">
-                        Revenue
-                    </h6>
+                    <h6>Revenue</h6>
 
-                    <h2 class="fw-bold text-danger">
+                    <h2 class="text-danger">
                         ₹ {{ revenue }}
                     </h2>
 
                 </div>
 
+                <i class="bi bi-cash-stack card-icon"></i>
+
             </div>
 
         </div>
 
     </div>
 
-    <!-- ===================== Status Cards ===================== -->
+    <!-- Status Cards -->
 
-    <div class="row g-4 mt-2">
+    <div class="row g-3 mt-1">
 
-        <div class="col-md-3">
+        <div class="col-6 col-lg-3">
 
-            <div class="card shadow border-0">
+            <div class="dashboard-card h-100">
 
-                <div class="card-body">
+                <div>
 
-                    <h6 class="text-muted">
-                        Paid Invoices
-                    </h6>
+                    <h6>Paid</h6>
 
-                    <h2 class="fw-bold text-success">
+                    <h2 class="text-success">
                         {{ paid_invoices }}
                     </h2>
 
                 </div>
 
+                <i class="bi bi-check-circle-fill card-icon"></i>
+
             </div>
 
         </div>
 
-        <div class="col-md-3">
+        <div class="col-6 col-lg-3">
 
-            <div class="card shadow border-0">
+            <div class="dashboard-card h-100">
 
-                <div class="card-body">
+                <div>
 
-                    <h6 class="text-muted">
-                        Pending Invoices
-                    </h6>
+                    <h6>Pending</h6>
 
-                    <h2 class="fw-bold text-warning">
+                    <h2 class="text-warning">
                         {{ pending_invoices }}
                     </h2>
 
                 </div>
 
+                <i class="bi bi-clock-history card-icon"></i>
+
             </div>
 
         </div>
 
-        <div class="col-md-3">
+        <div class="col-6 col-lg-3">
 
-            <div class="card shadow border-0">
+            <div class="dashboard-card h-100">
 
-                <div class="card-body">
+                <div>
 
-                    <h6 class="text-muted">
-                        Overdue Invoices
-                    </h6>
+                    <h6>Overdue</h6>
 
-                    <h2 class="fw-bold text-danger">
+                    <h2 class="text-danger">
                         {{ overdue_invoices }}
                     </h2>
 
                 </div>
 
+                <i class="bi bi-exclamation-circle-fill card-icon"></i>
+
             </div>
 
         </div>
 
-        <div class="col-md-3">
+        <div class="col-6 col-lg-3">
 
-            <div class="card shadow border-0">
+            <div class="dashboard-card h-100">
 
-                <div class="card-body">
+                <div>
 
-                    <h6 class="text-muted">
-                        GST Collected
-                    </h6>
+                    <h6>GST</h6>
 
-                    <h2 class="fw-bold text-primary">
+                    <h2 class="text-primary">
                         ₹ {{ gst_collected }}
                     </h2>
 
                 </div>
+
+                <i class="bi bi-receipt card-icon"></i>
 
             </div>
 
@@ -192,13 +194,13 @@
 
     </div>
 
-    <!-- ===================== Charts ===================== -->
+    <!-- Charts -->
 
-    <div class="row mt-5">
+    <div class="row mt-4 g-4">
 
-        <div class="col-lg-8 mb-4">
+        <div class="col-12 col-xl-8">
 
-            <div class="card shadow border-0">
+            <div class="card shadow border-0 h-100">
 
                 <div class="card-header bg-white">
 
@@ -210,7 +212,7 @@
 
                 <div class="card-body">
 
-                    <canvas id="revenueChart" height="110"></canvas>
+                    <canvas id="revenueChart"></canvas>
 
                 </div>
 
@@ -218,9 +220,9 @@
 
         </div>
 
-        <div class="col-lg-4 mb-4">
+        <div class="col-12 col-xl-4">
 
-            <div class="card shadow border-0">
+            <div class="card shadow border-0 h-100">
 
                 <div class="card-header bg-white">
 
@@ -242,11 +244,11 @@
 
     </div>
 
-    <!-- ===================== Tables ===================== -->
+    <!-- Tables -->
 
-    <div class="row">
+    <div class="row mt-4 g-4">
 
-        <div class="col-lg-6 mb-4">
+        <div class="col-12 col-lg-6">
 
             <div class="card shadow border-0">
 
@@ -262,45 +264,47 @@
 
                     <table class="table table-hover mb-0">
 
-                        <thead>
+                        <thead class="table-light">
 
-                            <tr>
+                        <tr>
 
-                                <th>Product</th>
+                            <th>Product</th>
 
-                                <th>Quantity</th>
+                            <th>Qty</th>
 
-                                <th>Revenue</th>
+                            <th>Revenue</th>
 
-                            </tr>
+                        </tr>
 
                         </thead>
 
                         <tbody>
 
-                            {% for product in top_products %}
+                        {% for product in top_products %}
 
-                            <tr>
+                        <tr>
 
-                                <td>{{ product.product__name }}</td>
+                            <td>{{ product.product__name }}</td>
 
-                                <td>{{ product.total_quantity }}</td>
+                            <td>{{ product.total_quantity }}</td>
 
-                                <td>₹ {{ product.total_revenue }}</td>
+                            <td>₹ {{ product.total_revenue }}</td>
 
-                            </tr>
+                        </tr>
 
-                            {% empty %}
+                        {% empty %}
 
-                            <tr>
+                        <tr>
 
-                                <td colspan="3" class="text-center">
-                                    No Data Available
-                                </td>
+                            <td colspan="3" class="text-center py-3">
 
-                            </tr>
+                                No Data Available
 
-                            {% endfor %}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
 
                         </tbody>
 
@@ -312,7 +316,7 @@
 
         </div>
 
-        <div class="col-lg-6 mb-4">
+        <div class="col-12 col-lg-6">
 
             <div class="card shadow border-0">
 
@@ -328,45 +332,47 @@
 
                     <table class="table table-hover mb-0">
 
-                        <thead>
+                        <thead class="table-light">
 
-                            <tr>
+                        <tr>
 
-                                <th>Customer</th>
+                            <th>Customer</th>
 
-                                <th>Invoices</th>
+                            <th>Invoices</th>
 
-                                <th>Total Purchase</th>
+                            <th>Total</th>
 
-                            </tr>
+                        </tr>
 
                         </thead>
 
                         <tbody>
 
-                            {% for customer in top_customers %}
+                        {% for customer in top_customers %}
 
-                            <tr>
+                        <tr>
 
-                                <td>{{ customer.customer__name }}</td>
+                            <td>{{ customer.customer__name }}</td>
 
-                                <td>{{ customer.invoices }}</td>
+                            <td>{{ customer.invoices }}</td>
 
-                                <td>₹ {{ customer.total_purchase }}</td>
+                            <td>₹ {{ customer.total_purchase }}</td>
 
-                            </tr>
+                        </tr>
 
-                            {% empty %}
+                        {% empty %}
 
-                            <tr>
+                        <tr>
 
-                                <td colspan="3" class="text-center">
-                                    No Data Available
-                                </td>
+                            <td colspan="3" class="text-center py-3">
 
-                            </tr>
+                                No Data Available
 
-                            {% endfor %}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
 
                         </tbody>
 
@@ -386,102 +392,55 @@
 
 <script>
 
-const revenueChart = document.getElementById("revenueChart");
+const revenueChart=document.getElementById("revenueChart");
 
-new Chart(revenueChart, {
-
-    type: "line",
-
-    data: {
-
-        labels: JSON.parse('{{ months|escapejs }}'),
-
-        datasets: [{
-
-            label: "Monthly Revenue",
-
-            data: JSON.parse('{{ revenues|escapejs }}'),
-
-            fill: true,
-
-            tension: 0.4,
-
-            borderWidth: 3,
-
-            pointRadius: 5
-
-        }]
-
-    },
-
-    options: {
-
-        responsive: true,
-
-        scales: {
-
-            y: {
-
-                beginAtZero: true
-
-            }
-
-        }
-
-    }
-
+new Chart(revenueChart,{
+type:"line",
+data:{
+labels:JSON.parse('{{ months|escapejs }}'),
+datasets:[{
+label:"Monthly Revenue",
+data:JSON.parse('{{ revenues|escapejs }}'),
+fill:true,
+tension:.4,
+borderWidth:3,
+pointRadius:4
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{
+display:true
+}
+}
+}
 });
 
-const statusChart = document.getElementById("statusChart");
+const statusChart=document.getElementById("statusChart");
 
-new Chart(statusChart, {
-
-    type: "doughnut",
-
-    data: {
-
-        labels: [
-
-            "Paid",
-
-            "Pending",
-
-            "Overdue"
-
-        ],
-
-        datasets: [{
-
-            data: [
-
-                {{ paid_invoices }},
-
-                {{ pending_invoices }},
-
-                {{ overdue_invoices }}
-
-            ]
-
-        }]
-
-    },
-
-    options: {
-
-        responsive: true,
-
-        plugins: {
-
-            legend: {
-
-                position: "bottom"
-
-            }
-
-        }
-
-    }
-
+new Chart(statusChart,{
+type:"doughnut",
+data:{
+labels:["Paid","Pending","Overdue"],
+datasets:[{
+data:[
+{{ paid_invoices }},
+{{ pending_invoices }},
+{{ overdue_invoices }}
+]
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:true,
+plugins:{
+legend:{
+position:"bottom"
+}
+}
+}
 });
 
 </script>

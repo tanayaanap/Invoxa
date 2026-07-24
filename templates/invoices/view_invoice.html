@@ -2,128 +2,260 @@
 
 {% block content %}
 
-<div class="container-fluid p-4">
+<div class="container-fluid p-3 p-md-4">
 
-    <div class="card shadow">
+    <div class="row justify-content-center">
 
-        <div class="card-header">
+        <div class="col-12">
 
-            <h3>Invoice Details</h3>
+            <div class="card shadow border-0">
 
-        </div>
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
 
-        <div class="card-body">
+                    <h3 class="mb-0">
+                        Invoice Details
+                    </h3>
 
-            <div class="row mb-4">
+                    <div>
 
-                <div class="col-md-6">
+                        <a href="{% url 'generate_invoice_pdf' invoice.id %}"
+                           class="btn btn-light btn-sm">
 
-                    <h5>Invoice Number</h5>
+                            <i class="bi bi-file-earmark-pdf-fill"></i>
 
-                    <p>{{ invoice.invoice_number }}</p>
+                            Download PDF
 
-                </div>
+                        </a>
 
-                <div class="col-md-6">
-
-                    <h5>Date</h5>
-
-                    <p>{{ invoice.invoice_date }}</p>
-
-                </div>
-
-            </div>
-
-            <div class="row mb-4">
-
-                <div class="col-md-6">
-
-                    <h5>Customer</h5>
-
-                    <p>{{ invoice.customer.name }}</p>
+                    </div>
 
                 </div>
 
-                <div class="col-md-6">
+                <div class="card-body">
 
-                    <h5>Status</h5>
+                    <!-- Invoice Information -->
 
-                    <span class="badge bg-success">
+                    <div class="row g-4 mb-4">
 
-                        {{ invoice.status }}
+                        <div class="col-md-6">
 
-                    </span>
+                            <div class="border rounded p-3 h-100">
+
+                                <h6 class="text-muted">
+                                    Invoice Number
+                                </h6>
+
+                                <h5 class="fw-bold">
+                                    {{ invoice.invoice_number }}
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="border rounded p-3 h-100">
+
+                                <h6 class="text-muted">
+                                    Invoice Date
+                                </h6>
+
+                                <h5 class="fw-bold">
+                                    {{ invoice.invoice_date }}
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="border rounded p-3 h-100">
+
+                                <h6 class="text-muted">
+                                    Customer
+                                </h6>
+
+                                <h5 class="fw-bold">
+                                    {{ invoice.customer.name }}
+                                </h5>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <div class="border rounded p-3 h-100">
+
+                                <h6 class="text-muted">
+                                    Status
+                                </h6>
+
+                                {% if invoice.status == "Paid" %}
+
+                                    <span class="badge bg-success fs-6">
+                                        Paid
+                                    </span>
+
+                                {% elif invoice.status == "Pending" %}
+
+                                    <span class="badge bg-warning text-dark fs-6">
+                                        Pending
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-danger fs-6">
+                                        Overdue
+                                    </span>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Products -->
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover table-bordered align-middle">
+
+                            <thead class="table-primary">
+
+                                <tr>
+
+                                    <th>Product</th>
+
+                                    <th>Quantity</th>
+
+                                    <th>Price</th>
+
+                                    <th>GST</th>
+
+                                    <th>Total</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+
+                                {% for item in invoice.items.all %}
+
+                                <tr>
+
+                                    <td>{{ item.product.name }}</td>
+
+                                    <td>{{ item.quantity }}</td>
+
+                                    <td>₹ {{ item.price }}</td>
+
+                                    <td>{{ item.gst }}%</td>
+
+                                    <td>₹ {{ item.total }}</td>
+
+                                </tr>
+
+                                {% empty %}
+
+                                <tr>
+
+                                    <td colspan="5" class="text-center">
+
+                                        No Products Found
+
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    <!-- Totals -->
+
+                    <div class="row justify-content-end mt-4">
+
+                        <div class="col-md-5 col-lg-4">
+
+                            <div class="card border-0 bg-light">
+
+                                <div class="card-body">
+
+                                    <div class="d-flex justify-content-between mb-2">
+
+                                        <strong>Subtotal</strong>
+
+                                        <span>₹ {{ invoice.subtotal }}</span>
+
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mb-2">
+
+                                        <strong>GST</strong>
+
+                                        <span>₹ {{ invoice.gst_amount }}</span>
+
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="d-flex justify-content-between">
+
+                                        <h5 class="fw-bold">
+                                            Grand Total
+                                        </h5>
+
+                                        <h5 class="fw-bold text-primary">
+
+                                            ₹ {{ invoice.total_amount }}
+
+                                        </h5>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Buttons -->
+
+                    <div class="mt-4 d-flex flex-column flex-sm-row gap-2">
+
+                        <a href="{% url 'invoice_list' %}"
+                           class="btn btn-secondary">
+
+                            <i class="bi bi-arrow-left-circle"></i>
+
+                            Back
+
+                        </a>
+
+                        <a href="{% url 'edit_invoice' invoice.id %}"
+                           class="btn btn-warning">
+
+                            <i class="bi bi-pencil-square"></i>
+
+                            Edit Invoice
+
+                        </a>
+
+                    </div>
 
                 </div>
-
-            </div>
-
-            <table class="table table-bordered">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Product</th>
-
-                        <th>Quantity</th>
-
-                        <th>Price</th>
-
-                        <th>GST</th>
-
-                        <th>Total</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {% for item in invoice.items.all %}
-
-                    <tr>
-
-                        <td>{{ item.product.name }}</td>
-
-                        <td>{{ item.quantity }}</td>
-
-                        <td>₹{{ item.price }}</td>
-
-                        <td>{{ item.gst }}%</td>
-
-                        <td>₹{{ item.total }}</td>
-
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
-            <div class="text-end">
-
-                <h5>
-
-                    Subtotal :
-                    ₹{{ invoice.subtotal }}
-
-                </h5>
-
-                <h5>
-
-                    GST :
-                    ₹{{ invoice.gst_amount }}
-
-                </h5>
-
-                <h4>
-
-                    Grand Total :
-                    ₹{{ invoice.total_amount }}
-
-                </h4>
 
             </div>
 

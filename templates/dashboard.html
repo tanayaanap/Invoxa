@@ -5,27 +5,28 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<div class="container-fluid p-3 p-md-4">
 
-    <!-- ================= Welcome ================= -->
+    <!-- Welcome -->
 
     <div class="mb-4">
 
         <h2 class="fw-bold">
-            Welcome Back, {{ request.user.first_name|default:request.user.username }} 👋
+            Welcome Back,
+            {{ request.user.first_name|default:request.user.username }} 👋
         </h2>
 
-        <p class="text-muted">
+        <p class="text-muted mb-0">
             Here's a quick overview of your business.
         </p>
 
     </div>
 
-    <!-- ================= Statistics Cards ================= -->
+    <!-- Statistics -->
 
     <div class="row g-4">
 
-        <div class="col-lg-3 col-md-6">
+        <div class="col-12 col-sm-6 col-xl-3">
 
             <div class="dashboard-card">
 
@@ -43,7 +44,7 @@
 
         </div>
 
-        <div class="col-lg-3 col-md-6">
+        <div class="col-12 col-sm-6 col-xl-3">
 
             <div class="dashboard-card">
 
@@ -61,7 +62,7 @@
 
         </div>
 
-        <div class="col-lg-3 col-md-6">
+        <div class="col-12 col-sm-6 col-xl-3">
 
             <div class="dashboard-card">
 
@@ -79,7 +80,7 @@
 
         </div>
 
-        <div class="col-lg-3 col-md-6">
+        <div class="col-12 col-sm-6 col-xl-3">
 
             <div class="dashboard-card">
 
@@ -99,25 +100,28 @@
 
     </div>
 
-    <!-- ================= Dashboard Content ================= -->
+    <!-- Main Content -->
 
-    <div class="row mt-4">
+    <div class="row mt-4 g-4">
 
         <!-- Recent Invoices -->
 
         <div class="col-lg-8">
 
-            <div class="table-card">
+            <div class="card shadow border-0 h-100">
 
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="card-header bg-white d-flex flex-column flex-sm-row justify-content-between align-items-center">
 
-                    <h5 class="mb-0">
+                    <h5 class="mb-2 mb-sm-0">
 
                         Recent Invoices
 
                     </h5>
 
-                    <a href="{% url 'invoice_list' %}" class="btn btn-outline-primary btn-sm">
+                    <a href="{% url 'invoice_list' %}"
+                       class="btn btn-outline-primary btn-sm">
+
+                        <i class="bi bi-eye"></i>
 
                         View All
 
@@ -125,97 +129,97 @@
 
                 </div>
 
-                <table class="table table-hover align-middle">
+                <div class="card-body">
 
-                    <thead>
+                    <div class="table-responsive">
 
-                        <tr>
+                        <table class="table table-hover align-middle">
 
-                            <th>Invoice</th>
+                            <thead class="table-primary">
 
-                            <th>Customer</th>
+                                <tr>
 
-                            <th>Date</th>
+                                    <th>Invoice</th>
 
-                            <th>Amount</th>
+                                    <th>Customer</th>
 
-                            <th>Status</th>
+                                    <th>Date</th>
 
-                        </tr>
+                                    <th>Amount</th>
 
-                    </thead>
+                                    <th>Status</th>
 
-                    <tbody>
+                                </tr>
 
-                    {% for invoice in recent_invoices %}
+                            </thead>
 
-                        <tr>
+                            <tbody>
 
-                            <td>
+                            {% for invoice in recent_invoices %}
 
-                                {{ invoice.invoice_number }}
+                                <tr>
 
-                            </td>
+                                    <td>{{ invoice.invoice_number }}</td>
 
-                            <td>
+                                    <td>{{ invoice.customer.name }}</td>
 
-                                {{ invoice.customer.name }}
+                                    <td>{{ invoice.invoice_date }}</td>
 
-                            </td>
+                                    <td>₹{{ invoice.total_amount }}</td>
 
-                            <td>
+                                    <td>
 
-                                {{ invoice.invoice_date }}
+                                        {% if invoice.status == "Paid" %}
 
-                            </td>
+                                            <span class="badge bg-success">
 
-                            <td>
+                                                Paid
 
-                                ₹{{ invoice.total_amount }}
+                                            </span>
 
-                            </td>
+                                        {% elif invoice.status == "Pending" %}
 
-                            <td>
+                                            <span class="badge bg-warning text-dark">
 
-                                {% if invoice.status == "Paid" %}
+                                                Pending
 
-                                    <span class="badge bg-success">
+                                            </span>
 
-                                        Paid
+                                        {% else %}
 
-                                    </span>
+                                            <span class="badge bg-danger">
 
-                                {% else %}
+                                                Overdue
 
-                                    <span class="badge bg-warning text-dark">
+                                            </span>
 
-                                        Pending
+                                        {% endif %}
 
-                                    </span>
+                                    </td>
 
-                                {% endif %}
+                                </tr>
 
-                            </td>
+                            {% empty %}
 
-                        </tr>
+                                <tr>
 
-                    {% empty %}
+                                    <td colspan="5" class="text-center py-4 text-muted">
 
-                        <tr>
+                                        No invoices available.
 
-                            <td colspan="5" class="text-center text-muted py-4">
+                                    </td>
 
-                                No invoices available.
+                                </tr>
 
-                            </td>
+                            {% endfor %}
 
-                        </tr>
+                            </tbody>
 
-                    {% endfor %}
+                        </table>
 
-                    </tbody>
+                    </div>
 
-                </table>
+                </div>
 
             </div>
 
@@ -225,77 +229,85 @@
 
         <div class="col-lg-4">
 
-            <div class="table-card">
+            <div class="card shadow border-0 h-100">
 
-                <h5 class="mb-3">
+                <div class="card-header bg-white">
 
-                    Payment Summary
+                    <h5 class="mb-0">
 
-                </h5>
+                        Payment Summary
 
-                <ul class="list-group">
+                    </h5>
 
-                    <li class="list-group-item d-flex justify-content-between">
+                </div>
 
-                        Payments Received
+                <div class="card-body">
 
-                        <strong class="text-success">
+                    <ul class="list-group">
 
-                            ₹{{ paid_amount|floatformat:2 }}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
 
-                        </strong>
+                            Payments Received
 
-                    </li>
+                            <strong class="text-success">
 
-                    <li class="list-group-item d-flex justify-content-between">
+                                ₹{{ paid_amount|floatformat:2 }}
 
-                        Pending Amount
+                            </strong>
 
-                        <strong class="text-warning">
+                        </li>
 
-                            ₹{{ pending_amount|floatformat:2 }}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
 
-                        </strong>
+                            Pending Amount
 
-                    </li>
+                            <strong class="text-warning">
 
-                    <li class="list-group-item d-flex justify-content-between">
+                                ₹{{ pending_amount|floatformat:2 }}
 
-                        Total Revenue
+                            </strong>
 
-                        <strong class="text-primary">
+                        </li>
 
-                            ₹{{ total_revenue|floatformat:2 }}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
 
-                        </strong>
+                            Total Revenue
 
-                    </li>
+                            <strong class="text-primary">
 
-                    <li class="list-group-item d-flex justify-content-between">
+                                ₹{{ total_revenue|floatformat:2 }}
 
-                        Paid Invoices
+                            </strong>
 
-                        <span class="badge bg-success">
+                        </li>
 
-                            {{ paid_invoices }}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
 
-                        </span>
+                            Paid Invoices
 
-                    </li>
+                            <span class="badge bg-success">
 
-                    <li class="list-group-item d-flex justify-content-between">
+                                {{ paid_invoices }}
 
-                        Pending Invoices
+                            </span>
 
-                        <span class="badge bg-warning text-dark">
+                        </li>
 
-                            {{ pending_invoices }}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
 
-                        </span>
+                            Pending Invoices
 
-                    </li>
+                            <span class="badge bg-warning text-dark">
 
-                </ul>
+                                {{ pending_invoices }}
+
+                            </span>
+
+                        </li>
+
+                    </ul>
+
+                </div>
 
             </div>
 
