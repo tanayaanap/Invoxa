@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+from core.decorators import allowed_roles
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -36,6 +38,7 @@ def format_currency(amount):
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant", "Staff"])
 def invoice_list(request):
 
     invoices = Invoice.objects.all().order_by("-invoice_date")
@@ -63,6 +66,7 @@ def invoice_list(request):
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant"])
 def add_invoice(request):
 
     products = Product.objects.all()
@@ -75,7 +79,9 @@ def add_invoice(request):
 
             invoice = form.save(commit=False)
 
-            invoice.invoice_number = f"INV-{Invoice.objects.count() + 1:04d}"
+            invoice.invoice_number = (
+                f"INV-{Invoice.objects.count()+1:04d}"
+            )
 
             invoice.save()
 
@@ -99,22 +105,31 @@ def add_invoice(request):
                 product = Product.objects.get(id=product_id)
 
                 InvoiceItem.objects.create(
+
                     invoice=invoice,
+
                     product=product,
+
                     quantity=int(quantity),
+
                     price=Decimal(price),
+
                     gst=18,
+
                     total=Decimal(total)
+
                 )
 
                 subtotal += Decimal(total)
 
-            gst_amount = subtotal * Decimal("0.18")
-            total_amount = subtotal + gst_amount
-
             invoice.subtotal = subtotal
-            invoice.gst_amount = gst_amount
-            invoice.total_amount = total_amount
+
+            invoice.gst_amount = subtotal * Decimal("0.18")
+
+            invoice.total_amount = (
+                invoice.subtotal +
+                invoice.gst_amount
+            )
 
             invoice.save()
 
@@ -124,6 +139,17 @@ def add_invoice(request):
             )
 
             return redirect("invoice_list")
+
+        else:
+
+            print("========== FORM ERRORS ==========")
+            print(form.errors)
+            print("=================================")
+
+            messages.error(
+                request,
+                "Please correct the form errors."
+            )
 
     else:
 
@@ -137,6 +163,7 @@ def add_invoice(request):
             "products": products
         }
     )
+
 
 @login_required(login_url="login")
 def view_invoice(request, pk):
@@ -155,6 +182,7 @@ def view_invoice(request, pk):
     )
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant"])
 def edit_invoice(request, pk):
 
     invoice = get_object_or_404(
@@ -194,6 +222,7 @@ def edit_invoice(request, pk):
     )
 
 @login_required(login_url="login")
+@allowed_roles(["Admin"])
 def delete_invoice(request, pk):
 
     invoice = get_object_or_404(
@@ -222,6 +251,7 @@ def delete_invoice(request, pk):
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin", "Accountant", "Staff"])
 def generate_invoice_pdf(request, pk):
     invoice = get_object_or_404(
         Invoice,

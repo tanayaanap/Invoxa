@@ -36,6 +36,4 @@ class PaymentForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        self.fields["invoice"].queryset = Invoice.objects.filter(
-            status="Pending"
-        )
+        self.fields["invoice"].queryset = Invoice.objects.all()

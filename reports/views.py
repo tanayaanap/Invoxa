@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
+from core.decorators import allowed_roles
+
 from customers.models import Customer
 from products.models import Product
 from invoices.models import Invoice, InvoiceItem
@@ -12,6 +14,7 @@ import json
 
 
 @login_required(login_url="login")
+@allowed_roles(["Admin"])
 def report_dashboard(request):
 
     # ==========================================
