@@ -1,32 +1,43 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1">
 
-    <title>{% block title %}Invoxa{% endblock %}</title>
+    <title>
+        {% block title %}
+            Invoxa
+        {% endblock %}
+    </title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap CSS -->
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
 
     <!-- Bootstrap Icons -->
 
-    <link rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- Google Font -->
+    <!-- Google Fonts -->
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Custom CSS -->
 
-    <link rel="stylesheet"
-href="{% static 'css/style.css' %}">
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}">
 
 </head>
 
@@ -34,19 +45,50 @@ href="{% static 'css/style.css' %}">
 
 <div class="wrapper">
 
+    <!-- Sidebar -->
+
     {% include 'sidebar.html' %}
 
     <div class="main">
+
+        <!-- Navbar -->
 
         {% include 'navbar.html' %}
 
         <div class="content">
 
-            {% block content %}
+            <!-- ================= Django Messages ================= -->
 
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show shadow-sm mb-4"
+                         role="alert">
+
+                        {{ message }}
+
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                        </button>
+
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+            <!-- ================= Page Content ================= -->
+
+            {% block content %}
             {% endblock %}
 
         </div>
+
+        <!-- Footer -->
 
         {% include 'footer.html' %}
 
@@ -54,9 +96,36 @@ href="{% static 'css/style.css' %}">
 
 </div>
 
+<!-- Bootstrap JS -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JS -->
 
 <script src="{% static 'js/script.js' %}"></script>
 
+<!-- Auto Close Alerts -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const alerts = document.querySelectorAll(".alert");
+
+    alerts.forEach(function(alert) {
+
+        setTimeout(function() {
+
+            bootstrap.Alert.getOrCreateInstance(alert).close();
+
+        }, 3000);
+
+    });
+
+});
+
+</script>
+
 </body>
+
 </html>
