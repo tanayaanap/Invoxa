@@ -2,20 +2,32 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.db.models import Sum
-from .forms import EditProfileForm
-from invoices.models import Invoice
-from payments.models import Payment
 from django.contrib.auth.decorators import login_required
-from customers.models import Customer
-from products.models import Product
-from django.contrib import messages
 from django.contrib.auth.models import User, Group
 
-from core.decorators import allowed_roles
+from .forms import EditProfileForm
+from .decorators import allowed_roles
+
+from customers.models import Customer
+from products.models import Product
+from invoices.models import Invoice
+from payments.models import Payment
+
 
 def login_view(request):
 
-    # Create admin user automatically if it doesn't exist
+    # ===========================
+    # Create Groups Automatically
+    # ===========================
+
+    admin_group, _ = Group.objects.get_or_create(name="Admin")
+    accountant_group, _ = Group.objects.get_or_create(name="Accountant")
+    staff_group, _ = Group.objects.get_or_create(name="Staff")
+
+    # ===========================
+    # Create Admin User
+    # ===========================
+
     if not User.objects.filter(username="admin").exists():
 
         admin = User.objects.create_superuser(
@@ -24,16 +36,51 @@ def login_view(request):
             password="Admin@123"
         )
 
-        # Add to Admin group if the group exists
-        try:
-            group = Group.objects.get(name="Admin")
-            admin.groups.add(group)
-        except Group.DoesNotExist:
-            pass
+    else:
 
+        admin = User.objects.get(username="admin")
+
+    if not admin.groups.filter(name="Admin").exists():
+        admin.groups.add(admin_group)
+
+    # ===========================
+    # Create Accountant User
+    # ===========================
+
+    if not User.objects.filter(username="accountant").exists():
+
+        accountant = User.objects.create_user(
+            username="accountant",
+            email="accountant@invoxa.com",
+            password="Account@123"
+        )
+
+        accountant.groups.add(accountant_group)
+
+    # ===========================
+    # Create Staff User
+    # ===========================
+
+    if not User.objects.filter(username="staff").exists():
+
+        staff = User.objects.create_user(
+            username="staff",
+            email="staff@invoxa.com",
+            password="Staff@123"
+        )
+
+        staff.groups.add(staff_group)
+
+    # ===========================
+    # Already Logged In
+    # ===========================
 
     if request.user.is_authenticated:
         return redirect("dashboard")
+
+    # ===========================
+    # Login
+    # ===========================
 
     if request.method == "POST":
 
@@ -47,11 +94,16 @@ def login_view(request):
         )
 
         if user is not None:
+
             login(request, user)
             return redirect("dashboard")
 
         else:
-            messages.error(request, "Invalid username or password")
+
+            messages.error(
+                request,
+                "Invalid username or password."
+            )
 
     return render(request, "login.html")
 
@@ -59,9 +111,6 @@ def login_view(request):
 @login_required(login_url="login")
 @allowed_roles(["Admin", "Accountant", "Staff"])
 def dashboard(request):
-
-    if not request.user.is_authenticated:
-        return redirect("login")
 
     total_customers = Customer.objects.count()
 
@@ -90,11 +139,11 @@ def dashboard(request):
     )["total_amount__sum"] or 0
 
     paid_invoices = Invoice.objects.filter(
-    status="Paid"
+        status="Paid"
     ).count()
 
     pending_invoices = Invoice.objects.filter(
-    status="Pending"
+        status="Pending"
     ).count()
 
     context = {
@@ -117,7 +166,6 @@ def dashboard(request):
 
         "pending_invoices": pending_invoices,
 
-
     }
 
     return render(
@@ -128,8 +176,11 @@ def dashboard(request):
 
 
 def logout_view(request):
+
     logout(request)
+
     return redirect("login")
+
 
 @login_required(login_url="login")
 def profile(request):
