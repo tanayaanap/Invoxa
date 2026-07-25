@@ -9,10 +9,28 @@ from django.contrib.auth.decorators import login_required
 from customers.models import Customer
 from products.models import Product
 from django.contrib import messages
+from django.contrib.auth.models import User, Group
 
 from core.decorators import allowed_roles
 
 def login_view(request):
+
+    # Create admin user automatically if it doesn't exist
+    if not User.objects.filter(username="admin").exists():
+
+        admin = User.objects.create_superuser(
+            username="admin",
+            email="admin@invoxa.com",
+            password="Admin@123"
+        )
+
+        # Add to Admin group if the group exists
+        try:
+            group = Group.objects.get(name="Admin")
+            admin.groups.add(group)
+        except Group.DoesNotExist:
+            pass
+
 
     if request.user.is_authenticated:
         return redirect("dashboard")
